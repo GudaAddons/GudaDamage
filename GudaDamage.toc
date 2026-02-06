@@ -2,7 +2,7 @@
 ## Title: GudaDamage
 ## Notes: Custom damage font selector
 ## Author: Vati
-## Version: 1.0.0
+## Version: 1.0.2
 ## SavedVariables: GudaDamageDB
 ## IconTexture: Interface\AddOns\GudaDamage\Assets\22.png
 

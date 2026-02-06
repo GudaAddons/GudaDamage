@@ -14,7 +14,7 @@ ns.FONTS = {
     { name = "Monoton",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\monoton.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\monoton.png" },
 }
 
-ns.DEFAULT_FONT = ns.FONTS[1].path
+ns.DEFAULT_FONT = ns.FONTS[3].path
 
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 ns.WORLD_TEXT_SCALE_CVAR = isRetail and "WorldTextScale_v2" or "WorldTextScale"
