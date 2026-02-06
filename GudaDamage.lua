@@ -5,10 +5,10 @@ local addonName, ns = ...
 ---------------------------------------------------------------
 local FONTS = {
     { name = "Default (Blizzard)", path = "Fonts\\FRIZQT__.TTF" },
-    { name = "NiceDamage",         path = "Interface\\AddOns\\GudaDamage\\Fonts\\nice-damage.ttf" },
-    { name = "Bungee",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\bungee.ttf" },
-    { name = "Diablo",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\diablo.ttf" },
-    { name = "Friz Quadrata",      path = "Interface\\AddOns\\GudaDamage\\Fonts\\friz-quadrata.ttf" },
+    { name = "NiceDamage",         path = "Interface\\AddOns\\GudaDamage\\Fonts\\nice-damage.ttf",    preview = "Interface\\AddOns\\GudaDamage\\Assets\\nice-damage.png" },
+    { name = "Bungee",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\bungee.ttf",         preview = "Interface\\AddOns\\GudaDamage\\Assets\\bungee.png" },
+    { name = "Diablo",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\diablo.ttf",         preview = "Interface\\AddOns\\GudaDamage\\Assets\\diablo.png" },
+    { name = "Friz Quadrata",      path = "Interface\\AddOns\\GudaDamage\\Fonts\\friz-quadrata.ttf",  preview = "Interface\\AddOns\\GudaDamage\\Assets\\friz-quadrata.png" },
 }
 
 local DEFAULT_FONT = FONTS[1].path
@@ -18,6 +18,13 @@ local function GetFontName(path)
         if f.path == path then return f.name end
     end
     return FONTS[1].name
+end
+
+local function GetFontPreview(path)
+    for _, f in ipairs(FONTS) do
+        if f.path == path then return f.preview end
+    end
+    return nil
 end
 
 ---------------------------------------------------------------
@@ -71,12 +78,13 @@ laterBtn:SetScript("OnClick", function() logoutPopup:Hide() end)
 local settingsFrame
 local dropdown
 local pendingFont
+local previewTex
 
 local function CreateSettingsFrame()
     if settingsFrame then return settingsFrame end
 
     local f = CreateFrame("Frame", "GudaDamageSettings", UIParent, "ButtonFrameTemplate")
-    f:SetSize(320, 160)
+    f:SetSize(320, 310)
     f:SetPoint("CENTER")
     f:SetMovable(true)
     f:SetClampedToScreen(true)
@@ -107,15 +115,13 @@ local function CreateSettingsFrame()
     end)
 
     -- Label
-    local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    label:SetPoint("LEFT", f, "LEFT", 16, 10)
-    label:SetPoint("RIGHT", f, "CENTER", -60, 10)
-    label:SetJustifyH("RIGHT")
+    local label = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    label:SetPoint("TOP", f, "TOP", 0, -30)
     label:SetText("Damage Font")
 
     -- Dropdown
     dropdown = CreateFrame("Frame", "GudaDamageDropdown", f, "UIDropDownMenuTemplate")
-    dropdown:SetPoint("LEFT", f, "CENTER", -70, 10)
+    dropdown:SetPoint("TOP", label, "BOTTOM", 0, -2)
     UIDropDownMenu_SetWidth(dropdown, 140)
 
     local function InitializeDropdown()
@@ -128,6 +134,12 @@ local function CreateSettingsFrame()
             info.func = function(self)
                 pendingFont = self.value
                 UIDropDownMenu_SetText(dropdown, fontInfo.name)
+                if fontInfo.preview then
+                    previewTex:SetTexture(fontInfo.preview)
+                    previewTex:Show()
+                else
+                    previewTex:Hide()
+                end
                 CloseDropDownMenus()
             end
             UIDropDownMenu_AddButton(info)
@@ -139,6 +151,18 @@ local function CreateSettingsFrame()
     local savedPath = (GudaDamageDB and GudaDamageDB.fontPath) or DEFAULT_FONT
     UIDropDownMenu_SetText(dropdown, GetFontName(savedPath))
     pendingFont = savedPath
+
+    -- Preview texture
+    previewTex = f:CreateTexture(nil, "ARTWORK")
+    previewTex:SetSize(260, 130)
+    previewTex:SetPoint("TOP", dropdown, "BOTTOM", 0, 0)
+    local previewPath = GetFontPreview(savedPath)
+    if previewPath then
+        previewTex:SetTexture(previewPath)
+        previewTex:Show()
+    else
+        previewTex:Hide()
+    end
 
     -- Save button
     local saveBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
@@ -171,6 +195,13 @@ local function ToggleSettings()
         local savedPath = (GudaDamageDB and GudaDamageDB.fontPath) or DEFAULT_FONT
         pendingFont = savedPath
         UIDropDownMenu_SetText(dropdown, GetFontName(savedPath))
+        local previewPath = GetFontPreview(savedPath)
+        if previewPath then
+            previewTex:SetTexture(previewPath)
+            previewTex:Show()
+        else
+            previewTex:Hide()
+        end
         f:Show()
     end
 end
