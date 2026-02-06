@@ -9,4 +9,6 @@
 ## Category: Guda
 
 Consts.lua
+Minimap.lua
+Settings.lua
 GudaDamage.lua

@@ -14,3 +14,10 @@ ns.FONTS = {
 }
 
 ns.DEFAULT_FONT = ns.FONTS[1].path
+
+function ns.GetFontInfo(path)
+    for _, f in ipairs(ns.FONTS) do
+        if f.path == path then return f end
+    end
+    return ns.FONTS[1]
+end
