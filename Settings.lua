@@ -147,7 +147,7 @@ local function CreateSettingsFrame()
     scaleLabel:SetJustifyH("RIGHT")
     scaleLabel:SetText("Scale")
 
-    local savedScale = GudaDamageDB.fontScale or tonumber(GetCVar("WorldTextScale")) or 1.0
+    local savedScale = GudaDamageDB.fontScale or tonumber(GetCVar(ns.WORLD_TEXT_SCALE_CVAR)) or 1.0
     pendingScale = savedScale
 
     local useModernSlider = DoesTemplateExist and DoesTemplateExist("MinimalSliderWithSteppersTemplate")
@@ -246,7 +246,7 @@ local function CreateSettingsFrame()
         GudaDamageDB.fontPath = pendingFont or DEFAULT_FONT
         GudaDamageDB.fontScale = pendingScale or 1.0
         DAMAGE_TEXT_FONT = GudaDamageDB.fontPath
-        SetCVar("WorldTextScale", GudaDamageDB.fontScale)
+        SetCVar(ns.WORLD_TEXT_SCALE_CVAR, GudaDamageDB.fontScale)
         f:Hide()
 
         local fontName = ns.GetFontInfo(GudaDamageDB.fontPath).name
@@ -273,7 +273,7 @@ function ns:ToggleSettings()
         local savedPath = GudaDamageDB.fontPath
         pendingFont = savedPath
         UIDropDownMenu_SetText(dropdown, ns.GetFontInfo(savedPath).name)
-        local savedScale = GudaDamageDB.fontScale or tonumber(GetCVar("WorldTextScale")) or 1.0
+        local savedScale = GudaDamageDB.fontScale or tonumber(GetCVar(ns.WORLD_TEXT_SCALE_CVAR)) or 1.0
         pendingScale = savedScale
         scaleRow:SetValue(savedScale)
         UpdatePreview(savedPath)

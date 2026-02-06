@@ -29,8 +29,9 @@ function ns:CreateMinimapButton()
 
     local function UpdatePosition()
         local angle = math.rad(GudaDamageDB.minimapPos or 225)
-        local x = 80 * math.cos(angle)
-        local y = 80 * math.sin(angle)
+        local r = (Minimap:GetWidth() / 2) + 5
+        local x = r * math.cos(angle)
+        local y = r * math.sin(angle)
         btn:ClearAllPoints()
         btn:SetPoint("CENTER", Minimap, "CENTER", x, y)
     end

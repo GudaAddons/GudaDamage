@@ -18,7 +18,7 @@ loader:SetScript("OnEvent", function(self, event, addon)
         if GudaDamageDB.minimapHide == nil then GudaDamageDB.minimapHide = false end
         DAMAGE_TEXT_FONT = GudaDamageDB.fontPath
         if GudaDamageDB.fontScale then
-            SetCVar("WorldTextScale", GudaDamageDB.fontScale)
+            SetCVar(ns.WORLD_TEXT_SCALE_CVAR, GudaDamageDB.fontScale)
         end
         local btn = ns:CreateMinimapButton()
         if GudaDamageDB.minimapHide then
