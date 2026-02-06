@@ -1,17 +1,7 @@
 local addonName, ns = ...
 
----------------------------------------------------------------
--- Font registry — add new fonts as { name = "...", path = "..." }
----------------------------------------------------------------
-local FONTS = {
-    { name = "Default (Blizzard)", path = "Fonts\\FRIZQT__.TTF" },
-    { name = "NiceDamage",         path = "Interface\\AddOns\\GudaDamage\\Fonts\\nice-damage.ttf",    preview = "Interface\\AddOns\\GudaDamage\\Assets\\nice-damage.png" },
-    { name = "Bungee",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\bungee.ttf",         preview = "Interface\\AddOns\\GudaDamage\\Assets\\bungee.png" },
-    { name = "Diablo",             path = "Interface\\AddOns\\GudaDamage\\Fonts\\diablo.ttf",         preview = "Interface\\AddOns\\GudaDamage\\Assets\\diablo.png" },
-    { name = "Friz Quadrata",      path = "Interface\\AddOns\\GudaDamage\\Fonts\\friz-quadrata.ttf",  preview = "Interface\\AddOns\\GudaDamage\\Assets\\friz-quadrata.png" },
-}
-
-local DEFAULT_FONT = FONTS[1].path
+local FONTS = ns.FONTS
+local DEFAULT_FONT = ns.DEFAULT_FONT
 
 local function GetFontName(path)
     for _, f in ipairs(FONTS) do
@@ -84,7 +74,7 @@ local function CreateSettingsFrame()
     if settingsFrame then return settingsFrame end
 
     local f = CreateFrame("Frame", "GudaDamageSettings", UIParent, "ButtonFrameTemplate")
-    f:SetSize(320, 310)
+    f:SetSize(320, 330)
     f:SetPoint("CENTER")
     f:SetMovable(true)
     f:SetClampedToScreen(true)
@@ -97,6 +87,9 @@ local function CreateSettingsFrame()
     if f.Inset then f.Inset:Hide() end
 
     f:SetTitle("GudaDamage")
+    if f.CloseButton then
+        f.CloseButton:SetScript("OnClick", function() f:Hide() end)
+    end
 
     -- Draggable title bar
     local dragRegion = CreateFrame("Frame", nil, f)
@@ -164,10 +157,16 @@ local function CreateSettingsFrame()
         previewTex:Hide()
     end
 
+    -- Hint text
+    local hint = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    hint:SetPoint("TOP", previewTex, "BOTTOM", 0, -4)
+    hint:SetTextColor(1, 0.82, 0)
+    hint:SetText("After saving, log out to character select\nfor the new font to take effect.")
+
     -- Save button
     local saveBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
     saveBtn:SetSize(100, 26)
-    saveBtn:SetPoint("BOTTOM", f, "BOTTOM", 0, 14)
+    saveBtn:SetPoint("BOTTOM", f, "BOTTOM", 0, 7)
     saveBtn:SetText("Save")
     saveBtn:SetScript("OnClick", function()
         GudaDamageDB.fontPath = pendingFont or DEFAULT_FONT

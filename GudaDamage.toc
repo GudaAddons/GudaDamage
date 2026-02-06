@@ -4,7 +4,9 @@
 ## Author: Vati
 ## Version: 1.0.0
 ## SavedVariables: GudaDamageDB
+## IconTexture: Interface\AddOns\GudaDamage\Assets\22.png
 
 ## Category: Guda
 
+Consts.lua
 GudaDamage.lua
