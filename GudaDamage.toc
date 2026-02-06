@@ -1,0 +1,10 @@
+## Interface: 120000, 110207, 50503, 20505, 11508
+## Title: GudaDamage
+## Notes: Custom damage font selector
+## Author: Vati
+## Version: 1.0.0
+## SavedVariables: GudaDamageDB
+
+## Category: Guda
+
+GudaDamage.lua
