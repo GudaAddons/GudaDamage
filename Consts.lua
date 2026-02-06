@@ -15,6 +15,9 @@ ns.FONTS = {
 
 ns.DEFAULT_FONT = ns.FONTS[1].path
 
+local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
+ns.WORLD_TEXT_SCALE_CVAR = isRetail and "WorldTextScale_v2" or "WorldTextScale"
+
 function ns.GetFontInfo(path)
     for _, f in ipairs(ns.FONTS) do
         if f.path == path then return f end
