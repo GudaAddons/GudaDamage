@@ -9,8 +9,9 @@ ns.FONTS = {
     { name = "Nosifer",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\nosifer.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\nosifer.png" },
     { name = "Butcherman",         path = "Interface\\AddOns\\GudaDamage\\Fonts\\butcherman.ttf",     preview = "Interface\\AddOns\\GudaDamage\\Assets\\butcherman.png" },
     { name = "Manufacturing",      path = "Interface\\AddOns\\GudaDamage\\Fonts\\manufacturing-consent.ttf",  preview = "Interface\\AddOns\\GudaDamage\\Assets\\manufacturing.png" },
-    { name = "Monoton",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\monoton.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\monoton.png" },
     { name = "Frijole",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\frijole.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\frijole.png" },
+    { name = "Rubic Glitch",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\rubic-glitch.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\rubic-glitch.png" },
+    { name = "Monoton",            path = "Interface\\AddOns\\GudaDamage\\Fonts\\monoton.ttf",        preview = "Interface\\AddOns\\GudaDamage\\Assets\\monoton.png" },
 }
 
 ns.DEFAULT_FONT = ns.FONTS[1].path
