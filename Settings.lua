@@ -50,9 +50,15 @@ local settingsFrame
 local dropdown
 local pendingFont
 local pendingScale
+local pendingGravity
 local previewTex
 local scaleSlider
 local scaleRow
+local gravitySlider
+local gravityRow
+local pendingDuration
+local durationSlider
+local durationRow
 
 local function UpdatePreview(path)
     local preview = ns.GetFontInfo(path).preview
@@ -68,7 +74,7 @@ local function CreateSettingsFrame()
     if settingsFrame then return settingsFrame end
 
     local f = CreateFrame("Frame", "GudaDamageSettings", UIParent, "ButtonFrameTemplate")
-    f:SetSize(320, 380)
+    f:SetSize(320, 440)
     f:SetPoint("CENTER")
     f:SetMovable(true)
     f:SetClampedToScreen(true)
@@ -211,10 +217,160 @@ local function CreateSettingsFrame()
         pendingScale = math.floor(val * 10 + 0.5) / 10
     end)
 
+    -- Gravity slider
+    gravityRow = CreateFrame("Frame", nil, f)
+    gravityRow:SetHeight(26)
+    gravityRow:SetPoint("LEFT", f, "LEFT", 10, 0)
+    gravityRow:SetPoint("RIGHT", f, "RIGHT", -10, 0)
+    gravityRow:SetPoint("TOP", scaleRow, "BOTTOM", 0, -2)
+
+    local gravityLabel = gravityRow:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    gravityLabel:SetPoint("LEFT", gravityRow, "LEFT", 0, 0)
+    gravityLabel:SetPoint("RIGHT", gravityRow, "CENTER", -60, 0)
+    gravityLabel:SetJustifyH("RIGHT")
+    gravityLabel:SetText("Gravity")
+
+    local savedGravity = GudaDamageDB.fontGravity or tonumber(GetCVar(ns.WORLD_TEXT_GRAVITY_CVAR)) or 0.5
+    pendingGravity = savedGravity
+
+    if useModernSlider then
+        gravitySlider = CreateFrame("Slider", nil, gravityRow, "MinimalSliderWithSteppersTemplate")
+        gravitySlider:SetPoint("LEFT", gravityRow, "CENTER", -50, 0)
+        gravitySlider:SetPoint("RIGHT", gravityRow, "RIGHT", -50, 0)
+        gravitySlider:SetHeight(20)
+
+        local gravSteps = (10 - (-10)) / 0.5
+        gravitySlider:Init(savedGravity, -10, 10, gravSteps, {
+            [MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+                return WHITE_FONT_COLOR:WrapTextInColorCode(string.format("%.1f", value))
+            end)
+        })
+
+        gravitySlider:RegisterCallback("OnValueChanged", function(_, value)
+            pendingGravity = math.floor(value * 10 + 0.5) / 10
+        end)
+
+        gravityRow.SetValue = function(_, v) gravitySlider:SetValue(v) end
+        gravityRow.GetValue = function() return gravitySlider.Slider:GetValue() end
+    else
+        gravitySlider = CreateFrame("Slider", nil, gravityRow, "OptionsSliderTemplate")
+        gravitySlider:SetPoint("LEFT", gravityRow, "CENTER", -50, 0)
+        gravitySlider:SetPoint("RIGHT", gravityRow, "RIGHT", -55, 0)
+        gravitySlider:SetMinMaxValues(-10, 10)
+        gravitySlider:SetValueStep(0.5)
+        gravitySlider:SetObeyStepOnDrag(true)
+        gravitySlider.Text:SetText("")
+        gravitySlider.Low:SetText("")
+        gravitySlider.High:SetText("")
+        gravitySlider:SetValue(savedGravity)
+
+        local gravityValue = gravityRow:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        gravityValue:SetPoint("LEFT", gravitySlider, "RIGHT", 5, 0)
+        gravityValue:SetWidth(40)
+        gravityValue:SetJustifyH("LEFT")
+        gravityValue:SetFormattedText("%.1f", savedGravity)
+
+        gravitySlider:SetScript("OnValueChanged", function(self, value)
+            value = math.floor(value * 10 + 0.5) / 10
+            pendingGravity = value
+            gravityValue:SetFormattedText("%.1f", value)
+        end)
+
+        gravityRow.SetValue = function(_, v)
+            gravitySlider:SetValue(v)
+            gravityValue:SetFormattedText("%.1f", v)
+        end
+        gravityRow.GetValue = function() return gravitySlider:GetValue() end
+    end
+
+    gravityRow:EnableMouseWheel(true)
+    gravityRow:SetScript("OnMouseWheel", function(self, delta)
+        local current = gravityRow.GetValue()
+        local val = current + (delta * 0.5)
+        val = math.max(-10, math.min(10, val))
+        gravityRow:SetValue(val)
+        pendingGravity = math.floor(val * 10 + 0.5) / 10
+    end)
+
+    -- Duration slider
+    durationRow = CreateFrame("Frame", nil, f)
+    durationRow:SetHeight(26)
+    durationRow:SetPoint("LEFT", f, "LEFT", 10, 0)
+    durationRow:SetPoint("RIGHT", f, "RIGHT", -10, 0)
+    durationRow:SetPoint("TOP", gravityRow, "BOTTOM", 0, -2)
+
+    local durationLabel = durationRow:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    durationLabel:SetPoint("LEFT", durationRow, "LEFT", 0, 0)
+    durationLabel:SetPoint("RIGHT", durationRow, "CENTER", -60, 0)
+    durationLabel:SetJustifyH("RIGHT")
+    durationLabel:SetText("Duration")
+
+    local savedDuration = GudaDamageDB.fontDuration or tonumber(GetCVar(ns.WORLD_TEXT_RAMP_DURATION_CVAR)) or 1.0
+    pendingDuration = savedDuration
+
+    if useModernSlider then
+        durationSlider = CreateFrame("Slider", nil, durationRow, "MinimalSliderWithSteppersTemplate")
+        durationSlider:SetPoint("LEFT", durationRow, "CENTER", -50, 0)
+        durationSlider:SetPoint("RIGHT", durationRow, "RIGHT", -50, 0)
+        durationSlider:SetHeight(20)
+
+        local durSteps = (3.0 - 0.1) / 0.01
+        durationSlider:Init(savedDuration, 0.1, 3.0, durSteps, {
+            [MinimalSliderWithSteppersMixin.Label.Right] = CreateMinimalSliderFormatter(MinimalSliderWithSteppersMixin.Label.Right, function(value)
+                return WHITE_FONT_COLOR:WrapTextInColorCode(string.format("%.2f", value))
+            end)
+        })
+
+        durationSlider:RegisterCallback("OnValueChanged", function(_, value)
+            pendingDuration = math.floor(value * 100 + 0.5) / 100
+        end)
+
+        durationRow.SetValue = function(_, v) durationSlider:SetValue(v) end
+        durationRow.GetValue = function() return durationSlider.Slider:GetValue() end
+    else
+        durationSlider = CreateFrame("Slider", nil, durationRow, "OptionsSliderTemplate")
+        durationSlider:SetPoint("LEFT", durationRow, "CENTER", -50, 0)
+        durationSlider:SetPoint("RIGHT", durationRow, "RIGHT", -55, 0)
+        durationSlider:SetMinMaxValues(0.1, 3.0)
+        durationSlider:SetValueStep(0.01)
+        durationSlider:SetObeyStepOnDrag(true)
+        durationSlider.Text:SetText("")
+        durationSlider.Low:SetText("")
+        durationSlider.High:SetText("")
+        durationSlider:SetValue(savedDuration)
+
+        local durationValue = durationRow:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        durationValue:SetPoint("LEFT", durationSlider, "RIGHT", 5, 0)
+        durationValue:SetWidth(40)
+        durationValue:SetJustifyH("LEFT")
+        durationValue:SetFormattedText("%.2f", savedDuration)
+
+        durationSlider:SetScript("OnValueChanged", function(self, value)
+            value = math.floor(value * 100 + 0.5) / 100
+            pendingDuration = value
+            durationValue:SetFormattedText("%.2f", value)
+        end)
+
+        durationRow.SetValue = function(_, v)
+            durationSlider:SetValue(v)
+            durationValue:SetFormattedText("%.2f", v)
+        end
+        durationRow.GetValue = function() return durationSlider:GetValue() end
+    end
+
+    durationRow:EnableMouseWheel(true)
+    durationRow:SetScript("OnMouseWheel", function(self, delta)
+        local current = durationRow.GetValue()
+        local val = current + (delta * 0.05)
+        val = math.max(0.1, math.min(3.0, val))
+        durationRow:SetValue(val)
+        pendingDuration = math.floor(val * 100 + 0.5) / 100
+    end)
+
     -- Preview texture
     previewTex = f:CreateTexture(nil, "ARTWORK")
     previewTex:SetSize(260, 130)
-    previewTex:SetPoint("TOP", scaleRow, "BOTTOM", 0, -6)
+    previewTex:SetPoint("TOP", durationRow, "BOTTOM", 0, -6)
     UpdatePreview(savedPath)
 
     -- Hint text
@@ -243,18 +399,25 @@ local function CreateSettingsFrame()
     saveBtn:SetPoint("BOTTOM", f, "BOTTOM", 0, 7)
     saveBtn:SetText("Save")
     saveBtn:SetScript("OnClick", function()
+        local oldFont = GudaDamageDB.fontPath
         GudaDamageDB.fontPath = pendingFont or DEFAULT_FONT
         GudaDamageDB.fontScale = pendingScale or 1.0
+        GudaDamageDB.fontGravity = pendingGravity or 0.5
+        GudaDamageDB.fontDuration = pendingDuration or 1.0
         DAMAGE_TEXT_FONT = GudaDamageDB.fontPath
         SetCVar(ns.WORLD_TEXT_SCALE_CVAR, GudaDamageDB.fontScale)
+        SetCVar(ns.WORLD_TEXT_GRAVITY_CVAR, GudaDamageDB.fontGravity)
+        SetCVar(ns.WORLD_TEXT_RAMP_DURATION_CVAR, GudaDamageDB.fontDuration)
         f:Hide()
 
-        local fontName = ns.GetFontInfo(GudaDamageDB.fontPath).name
-        popupText:SetText(
-            "Font changed to |cffffd200" .. fontName .. "|r\n\n" ..
-            "A logout is required for the\nnew damage font to take effect."
-        )
-        logoutPopup:Show()
+        if oldFont ~= GudaDamageDB.fontPath then
+            local fontName = ns.GetFontInfo(GudaDamageDB.fontPath).name
+            popupText:SetText(
+                "Font changed to |cffffd200" .. fontName .. "|r\n\n" ..
+                "A logout is required for the\nnew damage font to take effect."
+            )
+            logoutPopup:Show()
+        end
     end)
 
     f:Hide()
@@ -276,6 +439,12 @@ function ns:ToggleSettings()
         local savedScale = GudaDamageDB.fontScale or tonumber(GetCVar(ns.WORLD_TEXT_SCALE_CVAR)) or 1.0
         pendingScale = savedScale
         scaleRow:SetValue(savedScale)
+        local savedGravity = GudaDamageDB.fontGravity or tonumber(GetCVar(ns.WORLD_TEXT_GRAVITY_CVAR)) or 0.5
+        pendingGravity = savedGravity
+        gravityRow:SetValue(savedGravity)
+        local savedDuration = GudaDamageDB.fontDuration or tonumber(GetCVar(ns.WORLD_TEXT_RAMP_DURATION_CVAR)) or 1.0
+        pendingDuration = savedDuration
+        durationRow:SetValue(savedDuration)
         UpdatePreview(savedPath)
         f:Show()
     end
