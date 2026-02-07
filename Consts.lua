@@ -18,6 +18,8 @@ ns.DEFAULT_FONT = ns.FONTS[3].path
 
 local isRetail = (WOW_PROJECT_ID == WOW_PROJECT_MAINLINE)
 ns.WORLD_TEXT_SCALE_CVAR = isRetail and "WorldTextScale_v2" or "WorldTextScale"
+ns.WORLD_TEXT_GRAVITY_CVAR = isRetail and "WorldTextGravity_v2" or "WorldTextGravity"
+ns.WORLD_TEXT_RAMP_DURATION_CVAR = isRetail and "WorldTextRampDuration_v2" or "WorldTextRampDuration"
 
 function ns.GetFontInfo(path)
     for _, f in ipairs(ns.FONTS) do
