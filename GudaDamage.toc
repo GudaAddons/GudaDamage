@@ -1,8 +1,8 @@
-## Interface: 120000, 110207, 50503, 20505, 11508
+## Interface: 120001, 110207, 50503, 20505, 11508
 ## Title: GudaDamage
 ## Notes: Custom damage font selector
 ## Author: Vati
-## Version: 1.0.3
+## Version: 1.0.4
 ## SavedVariables: GudaDamageDB
 ## IconTexture: Interface\AddOns\GudaDamage\Assets\22.png
 
