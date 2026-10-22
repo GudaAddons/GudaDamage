@@ -124,6 +124,12 @@ local function CreateSettingsFrame()
             info.text = fontInfo.name
             info.value = fontInfo.path
             info.checked = (fontInfo.path == currentPath)
+            if not ns.FontSupportsClient(fontInfo) then
+                info.colorCode = "|cff808080"
+                info.tooltipTitle = fontInfo.name
+                info.tooltipText = "This font has no letters for your game language.\nNumbers work, but words like Dodge or Immune will not show."
+                info.tooltipOnButton = true
+            end
             info.func = function(self)
                 pendingFont = self.value
                 UIDropDownMenu_SetText(dropdown, fontInfo.name)
